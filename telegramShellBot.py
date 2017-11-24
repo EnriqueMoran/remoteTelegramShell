@@ -1,3 +1,4 @@
+import subprocess
 import telebot
 from telebot import types
 
@@ -7,7 +8,7 @@ bot = telebot.TeleBot(TOKEN)
 
 __author__ = "EnriqueMoran"
 
-PASSWORD = "pass123" 
+PASSWORD = "" 
 USERS = "./users.txt"    # Authorized users list
 MARKUP = types.ForceReply(selective = False)
 
@@ -37,11 +38,24 @@ def run(message):
     if checkLogin(USERS, message.chat.id) and message.text == "/run":
         bot.send_message(message.chat.id, "You can write commands now.")
     elif checkLogin(USERS, message.chat.id):
-        bot.send_message(message.chat.id, "command")
+        command = message.text.split()
+        print(command)
+        try:
+            p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+            (output, err) = p.communicate()
+            if not output:
+                output = "Command executed."         
+            bot.send_message(message.chat.id, str(output))
+            print(output)
+        except Exception, e:
+            error = "Error ocurred: " + str(e)
+            bot.send_message(message.chat.id, str(error))
+            print(error)
+            print(e.__class__.__name__)
 
 
 def register(file, user):
-    f = open(file, "w+")
+    f = open(file, "a+")
     content = f.readlines()
     content = [x.strip() for x in content]
     if not user in content:

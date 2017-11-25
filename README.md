@@ -25,4 +25,6 @@ Version syntax is the following:
 
 
 ## Version history
-- **v0.1_1.1.1:** *11/24/17* Basic user interface, generate output commands cant be sent, command's output can be received, commands that doesnt generate output wont be executed and user will receive "Command not executed" message.
+Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/releases) for more info.
+- **v0.1_1.1.1:** *11/24/17* Basic user interface, generate output commands cant be sent, command's output can be received, commands that doesnt generate output wont be executed and user will receive *"Command not executed"* message.
+- **v0.1_2.3.1:** *11/25/17* Added multiple user interface options, directory change is now possible, fully working log file, several non generating output command bugs has been fixed.

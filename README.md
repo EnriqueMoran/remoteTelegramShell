@@ -9,8 +9,8 @@ Once the user is logged in, commands can be sent. Linux computer receives and ex
 
 
 ## Working commands
-Currently there are a set of working commands: all that generates an output (on version v0.1_1.1.1). Commands that doesnt generate any kind of output will be received by the computer but wont be executed; commands that requires user input wont work, commands that open or execute files either.
-If errors occur on the execution of any command, it will be shown to user.
+Currently there are a set of working commands: most of generating output (on version v0.1_3.4.2). Commands that doesnt generate any kind of output will be received and executed  by the computer; commands that requires user input wont work yet, commands that open or execute files either.
+If errors occur on the execution of any command, it will be shown to user in real time.
 
 
 ## Versions

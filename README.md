@@ -7,6 +7,7 @@ Also has a log file for tracking users input, that registers the date, command a
 In order to access to computer control, Telegram users must log into the system. IDs of users who write the password correctly will be stored in a text file that grant future accesses. 
 Once the user is logged in, commands can be sent. Linux computer receives and executes them from telegram bot, command output will be shown to user on Telegram.
 
+![alt tag](https://i.gyazo.com/5deae4fb4950b30a9549fee0d87dce98.gif)
 
 ## Working commands
 Currently there are a set of working commands: most of generating output (on version v0.1_3.4.2). Commands that doesnt generate any kind of output will be received and executed  by the computer; commands that requires user input wont work yet, commands that open or execute files either.

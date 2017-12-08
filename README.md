@@ -1,5 +1,6 @@
 # remoteTelegramShell
 remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's secure conection to send commands and receive messages from the computer. Has an user login system and root restriction in order to avoid malicious connections from other Telegram users.
+
 Also has a log file for tracking users input, that registers the date, command and user ID.
 
 ![alt tag](https://i.gyazo.com/5deae4fb4950b30a9549fee0d87dce98.gif)
@@ -7,11 +8,14 @@ Also has a log file for tracking users input, that registers the date, command a
 
 ## How it works
 In order to access to computer control, Telegram users must log into the system. IDs of users who write the password correctly will be stored in a text file that grant future accesses. 
+
 Once the user is logged in, commands can be sent. Linux computer receives and executes them from telegram bot, command output will be shown to user on Telegram.
+
 Telegram bot is running on computer's side. Commands are sent from any (authorized) telegram client and received by telegram bot. 
-Commands are sent though python to CMD and excecuted. Command's output is captured by python and sent in real time to telegram user.
+Commands are sent through python to CMD and excecuted. Command's output is captured by python and sent in real time to telegram user.
 
 ![alt tag](https://i.imgur.com/hKa0CkX.png)
+
 
 
 ## Working commands

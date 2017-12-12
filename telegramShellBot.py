@@ -14,7 +14,7 @@ TOKEN = ''
 
 bot = telebot.TeleBot(TOKEN)
 
-VERSION = "v0.1_3.4.2"
+VERSION = "v0.1_5.5.3"
 PASSWORD = "" 
 USERS = "/home/pi/Share/users.txt"    # Authorized users list, path must be absolute
 LOG = "/home/pi/Share/log.txt"    # Connections and commands log file, path must be absolute
@@ -42,15 +42,6 @@ def validate(message):
         bot.register_next_step_handler(msg, validate)
 
 
-def changeDir(message):
-    registerLog(LOG, message)
-    try:
-        os.chdir(message.text)
-        bot.send_message(message.chat.id,"Current directory: " + str(os.getcwd()))
-    except:
-        bot.send_message(message.chat.id,"No such directory.")
-
-
 def install(message):
     registerLog(LOG, message)
     try:
@@ -74,6 +65,30 @@ def install(message):
         bot.send_message(message.chat.id, str(error))
         bot.send_message(message.chat.id, str(errorType))
 
+def uninstall(message):
+    registerLog(LOG, message)
+    try:
+        if checkLogin(USERS, message.chat.id):
+            package = message.text
+            proc = subprocess.Popen('sudo apt-get --purge remove -y ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, executable="/bin/bash")
+            while True:
+                output = proc.stdout.readline()
+                if output == '' and proc.poll() is not None:
+                    break
+                if output:
+                    bot.send_message(message.chat.id, output.strip())
+            proc.wait()
+            if proc.poll() == 0:
+                bot.send_message(message.chat.id, package + " sucessfully uninstalled.")
+            else:
+                bot.send_message(message.chat.id, package + " not uninstalled")
+    except Exception, e:
+        error = "Error ocurred: " + str(e)
+        errorType = "Error type: " + str((e.__class__.__name__))
+        bot.send_message(message.chat.id, str(error))
+        bot.send_message(message.chat.id, str(errorType))
+
+
 
 def update(message):
     registerLog(LOG, message)
@@ -89,6 +104,7 @@ def update(message):
                     if output:
                         bot.send_message(message.chat.id, output.strip())
                 proc.wait()
+                bot.send_message(message.chat.id, "Done")
             else:
                  bot.send_message(message.chat.id, "System not updated.")
     except Exception, e:
@@ -112,6 +128,7 @@ def update(message):
                     if output:
                         bot.send_message(message.chat.id, output.strip())
                 proc.wait()
+                bot.send_message(message.chat.id, "Done")
             else:
                  bot.send_message(message.chat.id, "System not updated.")
     except Exception, e:
@@ -145,13 +162,12 @@ def installCommand(message):
         bot.send_message(message.chat.id, "Write package name.")
         bot.register_next_step_handler(message, install)
 
-
-@bot.message_handler(commands=['cd'])
-def cdCommand(message):
+@bot.message_handler(commands=['uninstall'])
+def uninstallCommand(message):
     registerLog(LOG, message)
-    if checkLogin(USERS, message.chat.id) and message.text == "/cd":
-        bot.send_message(message.chat.id, "Write new directory (only path).")
-        bot.register_next_step_handler(message, changeDir)
+    if checkLogin(USERS, message.chat.id) and message.text == "/uninstall":
+        bot.send_message(message.chat.id, "Write package name.")
+        bot.register_next_step_handler(message, uninstall)
 
 
 @bot.message_handler(commands=['help'])
@@ -159,7 +175,7 @@ def send_welcome(message):
     registerLog(LOG, message)
     bot.send_message(message.chat.id, "Current version: " + VERSION)
     bot.send_message(message.chat.id, "Welcome to telegramShell, this bot allows you to remotely control linux terminal.")
-    bot.send_message(message.chat.id, "List os avaliable commands:\n- To change directory use /cd \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To use the rest of the commands use /run")
+    bot.send_message(message.chat.id, "List os avaliable commands: \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To use the rest of the commands use /run")
 
 
 @bot.message_handler(commands=['run'])
@@ -170,20 +186,26 @@ def run(message):
         bot.send_message(message.chat.id, "You can write commands now.")
     elif checkLogin(USERS, message.chat.id):
         command = message.text
-        try:
-            p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, cwd = os.getcwd(), bufsize = 1)
-            for line in iter(p.stdout.readline, b''):
-                try:
-                    bot.send_message(message.chat.id, line)
-                except:
-                    pass
-            p.communicate()        
-            p.wait()         
-        except Exception, e:
-            error = "Error ocurred: " + str(e)
-            errorType = "Error type: " + str((e.__class__.__name__))
-            bot.send_message(message.chat.id, str(error))
-            bot.send_message(message.chat.id, str(errorType))
+        if command[0:2] == "cd":
+            os.chdir(message.text[3:])
+            bot.send_message(message.chat.id,"Current directory: " + str(os.getcwd()))
+        elif command[0:4] == "sudo":
+            bot.send_message(message.chat.id,"root commands are disabled.")
+        else:
+            try:
+                p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, cwd = os.getcwd(), bufsize = 1)
+                for line in iter(p.stdout.readline, b''):
+                    try:
+                        bot.send_message(message.chat.id, line)
+                    except:
+                        pass
+                p.communicate()        
+                p.wait()         
+            except Exception, e:
+                error = "Error ocurred: " + str(e)
+                errorType = "Error type: " + str((e.__class__.__name__))
+                bot.send_message(message.chat.id, str(error))
+                bot.send_message(message.chat.id, str(errorType)) 
 
 
 def register(file, user):

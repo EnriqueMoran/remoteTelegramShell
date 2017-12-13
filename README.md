@@ -39,7 +39,7 @@ Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/rel
 - **v0.1_1.1.1:** *11/24/17* Basic user interface, generate output commands cant be sent, command's output can be received, commands that doesnt generate output wont be executed and user will receive *"Command not executed"* message.
 - **v0.1_2.3.1:** *11/25/17* Added multiple user interface options, directory change is now possible, fully working log file, several non generating output command bugs has been fixed.
 - **v0.1_3.4.2:** *12/07/17* Added install packages, update and upgrade system options; command output is captured and shown to user in real time. Most of linux basic commands are working, but editing file commands.
-
+- **v0.1_5.5.3:** *12/12/17* Root access disabled, some options removed and new ones added. Huge command quantity has been successfully tested.
 
 
 

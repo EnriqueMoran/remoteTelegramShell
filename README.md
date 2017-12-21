@@ -40,7 +40,7 @@ Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/rel
 - **v0.1_2.3.1:** *11/25/17* Added multiple user interface options, directory change is now possible, fully working log file, several non generating output command bugs has been fixed.
 - **v0.1_3.4.2:** *12/07/17* Added install packages, update and upgrade system options; command output is captured and shown to user in real time. Most of linux basic commands are working, but editing file commands.
 - **v0.1_5.5.3:** *12/12/17* Root access disabled, some options removed and new ones added. Huge command quantity has been successfully tested.
-- **v0.1_6.6.4:** *12/21/17* Config file added, minor bugs fixed.
+- **v0.1_6.6.4:** *12/21/17* Config file added, minor bugs fixed, user's ID are ciphered on users file.
 
 
 

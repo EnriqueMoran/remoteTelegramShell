@@ -1,6 +1,7 @@
 import subprocess
 import os
 import datetime
+import hashlib
 import telebot
 from telebot import types
 
@@ -10,19 +11,63 @@ __author__ = "EnriqueMoran"
 
 
 
-TOKEN = ''
+TOKEN = None
+VERSION = None
+PASSWORD = None
+USERS = None
+LOG = None
+OS = None
+LOGLIMIT = None
+APP = None
+FORBIDDENCOMMANDS = ["nano ", "exit ", "clear"]
 
+
+def loadConfig(configFile):
+    global VERSION, TOKEN, PASSWORD, USERS, LOG, LOGLIMIT, ROOT, OS, APP
+    file = open(configFile, "r")
+    temp = file.read().splitlines()
+    cont = 0
+    read = False
+    for line in temp:
+            if cont == 5 and line[:1] != "" and read == True:
+                APP = [file.strip() for file in line.split('=')][1]
+                read = False
+            if cont == 8 and line[:1] != "" and read == True:
+                OS = [file.strip() for file in line.split('=')][1]
+                read = False
+            if cont == 10 and line[:1] != "" and read == True:
+                VERSION = [file.strip() for file in line.split('=')][1]
+                read = False
+            if cont == 11 and line[:1] != "" and read == True:
+                TOKEN = [file.strip() for file in line.split('=')][1]
+                read = False
+            if cont == 14 and line[:1] != "" and read == True:
+                PASSWORD = [file.strip() for file in line.split('=')][1]
+                read = False
+            if cont == 18 and line[:1] != "" and read == True:
+                USERS = [file.strip() for file in line.split('=')][1]
+                read = False
+            if cont == 20 and line[:1] != "" and read == True:
+                LOG = [file.strip() for file in line.split('=')][1]
+                read = False
+            if cont == 21 and line[:1] != "" and read == True:
+                LOGLIMIT = int([file.strip() for file in line.split('=')][1])
+                read = False
+            if cont == 24 and line[:1] != "" and read == True:
+                ROOT = bool([file.strip() for file in line.split('=')][1])
+                read = False
+            if line[:1] == "#":
+                cont += 1
+                read = True
+
+
+loadConfig("./config.txt")
 bot = telebot.TeleBot(TOKEN)
-
-VERSION = "v0.1_5.5.3"
-PASSWORD = "" 
-USERS = "/home/pi/Share/users.txt"    # Authorized users list, path must be absolute
-LOG = "/home/pi/Share/log.txt"    # Connections and commands log file, path must be absolute
 MARKUP = types.ForceReply(selective = False)
 
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands = ['start'])
 def send_welcome(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id):
@@ -47,7 +92,7 @@ def install(message):
     try:
         if checkLogin(USERS, message.chat.id):
             package = message.text
-            proc = subprocess.Popen('sudo apt-get install -y ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, executable="/bin/bash")
+            proc = subprocess.Popen('sudo apt-get install -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
             while True:
                 output = proc.stdout.readline()
                 if output == '' and proc.poll() is not None:
@@ -65,12 +110,13 @@ def install(message):
         bot.send_message(message.chat.id, str(error))
         bot.send_message(message.chat.id, str(errorType))
 
+
 def uninstall(message):
     registerLog(LOG, message)
     try:
         if checkLogin(USERS, message.chat.id):
             package = message.text
-            proc = subprocess.Popen('sudo apt-get --purge remove -y ' + package, shell=True, stdin=None, stdout=subprocess.PIPE, executable="/bin/bash")
+            proc = subprocess.Popen('sudo apt-get --purge remove -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
             while True:
                 output = proc.stdout.readline()
                 if output == '' and proc.poll() is not None:
@@ -89,6 +135,11 @@ def uninstall(message):
         bot.send_message(message.chat.id, str(errorType))
 
 
+def encrypt(id):
+    m = hashlib.sha256()
+    m.update(str(id).encode())
+    return m.hexdigest()
+
 
 def update(message):
     registerLog(LOG, message)
@@ -96,7 +147,7 @@ def update(message):
         if checkLogin(USERS, message.chat.id):
             action = message.text
             if action == "yes":
-                proc = subprocess.Popen('sudo apt-get update -y', shell=True, stdin=None, stdout=subprocess.PIPE, executable="/bin/bash")
+                proc = subprocess.Popen('sudo apt-get update -y', shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
                 while True:
                     output = proc.stdout.readline()
                     if output == '' and proc.poll() is not None:
@@ -120,7 +171,7 @@ def update(message):
         if checkLogin(USERS, message.chat.id):
             action = message.text
             if action == "yes":
-                proc = subprocess.Popen('sudo apt-get update -y', shell=True, stdin=None, stdout=subprocess.PIPE, executable="/bin/bash")
+                proc = subprocess.Popen('sudo apt-get update -y', shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
                 while True:
                     output = proc.stdout.readline()
                     if output == '' and proc.poll() is not None:
@@ -138,8 +189,7 @@ def update(message):
         bot.send_message(message.chat.id, str(errorType))
 
 
-
-@bot.message_handler(commands=['upgrade'])
+@bot.message_handler(commands = ['upgrade'])
 def upgradeCommand(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id) and message.text == "/upgrade":
@@ -147,7 +197,7 @@ def upgradeCommand(message):
         bot.register_next_step_handler(message, upgrade)
 
 
-@bot.message_handler(commands=['update'])
+@bot.message_handler(commands = ['update'])
 def updateCommand(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id) and message.text == "/update":
@@ -155,14 +205,14 @@ def updateCommand(message):
         bot.register_next_step_handler(message, update)
 
 
-@bot.message_handler(commands=['install'])
+@bot.message_handler(commands = ['install'])
 def installCommand(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id) and message.text == "/install":
         bot.send_message(message.chat.id, "Write package name.")
         bot.register_next_step_handler(message, install)
 
-@bot.message_handler(commands=['uninstall'])
+@bot.message_handler(commands = ['uninstall'])
 def uninstallCommand(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id) and message.text == "/uninstall":
@@ -170,7 +220,7 @@ def uninstallCommand(message):
         bot.register_next_step_handler(message, uninstall)
 
 
-@bot.message_handler(commands=['help'])
+@bot.message_handler(commands = ['help'])
 def send_welcome(message):
     registerLog(LOG, message)
     bot.send_message(message.chat.id, "Current version: " + VERSION)
@@ -178,8 +228,8 @@ def send_welcome(message):
     bot.send_message(message.chat.id, "List os avaliable commands: \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To use the rest of the commands use /run")
 
 
-@bot.message_handler(commands=['run'])
-@bot.message_handler(func=lambda message: True)
+@bot.message_handler(commands = ['run'])
+@bot.message_handler(func = lambda message: True)
 def run(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id) and message.text == "/run":
@@ -187,20 +237,40 @@ def run(message):
     elif checkLogin(USERS, message.chat.id):
         command = message.text
         if command[0:2] == "cd":
-            os.chdir(message.text[3:])
-            bot.send_message(message.chat.id,"Current directory: " + str(os.getcwd()))
+            try:
+                os.chdir(message.text[3:])
+                bot.send_message(message.chat.id,"Current directory: " + str(os.getcwd()))
+            except Exception as e:
+                bot.send_message(message.chat.id, str(e))
         elif command[0:4] == "sudo":
             bot.send_message(message.chat.id,"root commands are disabled.")
-        else:
+        elif command[0:4] == "ping" and len(command.split()) == 2:
+            ip = str(command).split()[1]
+            com = "ping " + str(ip) + " -c 4"
             try:
-                p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, cwd = os.getcwd(), bufsize = 1)
+                p = subprocess.Popen(com, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
                 for line in iter(p.stdout.readline, b''):
                     try:
                         bot.send_message(message.chat.id, line)
                     except:
                         pass
-                p.communicate()        
-                p.wait()         
+                p.communicate()
+                p.wait()
+            except Exception as e:
+                error = "Error ocurred: " + str(e)
+                errorType = "Error type: " + str((e.__class__.__name__))
+                bot.send_message(message.chat.id, str(error))
+                bot.send_message(message.chat.id, str(errorType))
+        else:
+            try:
+                p = subprocess.Popen(command, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
+                for line in iter(p.stdout.readline, b''):
+                    try:
+                        bot.send_message(message.chat.id, line)
+                    except:
+                        pass
+                p.communicate()
+                p.wait()
             except Exception, e:
                 error = "Error ocurred: " + str(e)
                 errorType = "Error type: " + str((e.__class__.__name__))
@@ -209,20 +279,22 @@ def run(message):
 
 
 def register(file, user):
+    encryptedUser = encrypt(user)
     f = open(file, "a+")
     content = f.readlines()
     content = [x.strip() for x in content]
-    if not user in content:
-        f.write(str(user) + "\n")
+    if not encryptedUser in content:
+        f.write(str(encryptedUser) + "\n")
     f.close
 
 
 def checkLogin(file, login):
+    encryptedLogin = encrypt(login)
     check = False
     with open(file) as f:
         content = f.readlines()
         content = [x.strip() for x in content]
-        if str(login) in content:
+        if encryptedLogin in content:
             check = True
     return check
 
@@ -232,7 +304,6 @@ def registerLog(file, command):
     now = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S ")
     f.write(now + "[" + str(command.from_user.username) + " (" + str(command.chat.id) + ")] " + str(command.text) + "\n")
     f.close()
-
 
 
 

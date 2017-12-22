@@ -13,12 +13,12 @@ appdevice = Telegram
 # Operative System - Choose between "Linux" and "Windows" OS, although user inputs commands, 
 # there are a set of pre established commands that depends on the OS in which 
 # remoteTelegramShell.py is running.
-os =
+os = Linux
 
 
 # Version - This parameter is automatically filled. Current version will be shown on /help
 # option. Please do not modify.
-version = v0.1_6.6.4
+version = v0.2_6.7.5
 
 
 # TOKEN - This is bot auth token, necessary to connect bot to Telegram device.

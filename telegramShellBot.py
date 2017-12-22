@@ -14,12 +14,12 @@ __author__ = "EnriqueMoran"
 TOKEN = None
 VERSION = None
 PASSWORD = None
-USERS = None
-LOG = None
-OS = None
-LOGLIMIT = None
-APP = None
-FORBIDDENCOMMANDS = ["nano ", "exit ", "clear"]
+USERS = None    # users.txt path
+LOG = None    # log.txt path
+OS = None    # currently working on Linux
+LOGLIMIT = None    # max number of lines allowed
+APP = None    # currently working app is Telegram
+FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand"]    # non working commands
 
 
 def loadConfig(configFile):
@@ -61,7 +61,7 @@ def loadConfig(configFile):
                 read = True
 
 
-loadConfig("./config.txt")
+loadConfig("./configtest.txt")
 bot = telebot.TeleBot(TOKEN)
 MARKUP = types.ForceReply(selective = False)
 
@@ -87,7 +87,7 @@ def validate(message):
         bot.register_next_step_handler(msg, validate)
 
 
-def install(message):
+def install(message):    # install a package
     registerLog(LOG, message)
     try:
         if checkLogin(USERS, message.chat.id):
@@ -111,7 +111,7 @@ def install(message):
         bot.send_message(message.chat.id, str(errorType))
 
 
-def uninstall(message):
+def uninstall(message):    # uninstall a package
     registerLog(LOG, message)
     try:
         if checkLogin(USERS, message.chat.id):
@@ -135,13 +135,13 @@ def uninstall(message):
         bot.send_message(message.chat.id, str(errorType))
 
 
-def encrypt(id):
+def encrypt(id):    # cipher users.txt content using SHA256
     m = hashlib.sha256()
     m.update(str(id).encode())
     return m.hexdigest()
 
 
-def update(message):
+def update(message):    # update system
     registerLog(LOG, message)
     try:
         if checkLogin(USERS, message.chat.id):
@@ -165,13 +165,13 @@ def update(message):
         bot.send_message(message.chat.id, str(errorType))
 
 
-def update(message):
+def upgrade(message):    # upgrade system
     registerLog(LOG, message)
     try:
         if checkLogin(USERS, message.chat.id):
             action = message.text
             if action == "yes":
-                proc = subprocess.Popen('sudo apt-get update -y', shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
+                proc = subprocess.Popen('sudo apt-get upgrade -y', shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
                 while True:
                     output = proc.stdout.readline()
                     if output == '' and proc.poll() is not None:
@@ -181,12 +181,19 @@ def update(message):
                 proc.wait()
                 bot.send_message(message.chat.id, "Done")
             else:
-                 bot.send_message(message.chat.id, "System not updated.")
+                 bot.send_message(message.chat.id, "System not upgraded.")
     except Exception, e:
         error = "Error ocurred: " + str(e)
         errorType = "Error type: " + str((e.__class__.__name__))
         bot.send_message(message.chat.id, str(error))
         bot.send_message(message.chat.id, str(errorType))
+
+
+def showforbidden():
+    res = ""
+    for element in FORBIDDENCOMMANDS:
+        res += element + ", "
+    return res[:-2]
 
 
 @bot.message_handler(commands = ['upgrade'])
@@ -212,6 +219,7 @@ def installCommand(message):
         bot.send_message(message.chat.id, "Write package name.")
         bot.register_next_step_handler(message, install)
 
+
 @bot.message_handler(commands = ['uninstall'])
 def uninstallCommand(message):
     registerLog(LOG, message)
@@ -220,12 +228,17 @@ def uninstallCommand(message):
         bot.register_next_step_handler(message, uninstall)
 
 
+@bot.message_handler(commands = ['forbidden'])
+def forbiddenCommand(message):
+    bot.send_message(message.chat.id, "Currently forbidden commands: " + str(showforbidden()))
+
+
 @bot.message_handler(commands = ['help'])
 def send_welcome(message):
     registerLog(LOG, message)
     bot.send_message(message.chat.id, "Current version: " + VERSION)
-    bot.send_message(message.chat.id, "Welcome to telegramShell, this bot allows you to remotely control linux terminal.")
-    bot.send_message(message.chat.id, "List os avaliable commands: \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To use the rest of the commands use /run")
+    bot.send_message(message.chat.id, "Welcome to telegramShell, this bot allows you to remotely control a computer terminal.")
+    bot.send_message(message.chat.id, "List os avaliable commands: \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To view forbidden commands use /forbidden \n- To use the rest of the commands use /run")
 
 
 @bot.message_handler(commands = ['run'])
@@ -242,9 +255,11 @@ def run(message):
                 bot.send_message(message.chat.id,"Current directory: " + str(os.getcwd()))
             except Exception as e:
                 bot.send_message(message.chat.id, str(e))
-        elif command[0:4] == "sudo":
+        elif command.split()[0] in FORBIDDENCOMMANDS:
+            bot.send_message(message.chat.id,"Forbidden command.")
+        elif command[0:4] == "sudo" and not ROOT:
             bot.send_message(message.chat.id,"root commands are disabled.")
-        elif command[0:4] == "ping" and len(command.split()) == 2:
+        elif command[0:4] == "ping" and len(command.split()) == 2:    # infinite ping fix
             ip = str(command).split()[1]
             com = "ping " + str(ip) + " -c 4"
             try:
@@ -255,7 +270,8 @@ def run(message):
                     except:
                         pass
                 p.communicate()
-                p.wait()
+                if p.returncode != 0: 
+                    bot.send_message(message.chat.id, " Name or service not known")
             except Exception as e:
                 error = "Error ocurred: " + str(e)
                 errorType = "Error type: " + str((e.__class__.__name__))
@@ -267,10 +283,12 @@ def run(message):
                 for line in iter(p.stdout.readline, b''):
                     try:
                         bot.send_message(message.chat.id, line)
-                    except:
-                        pass
-                p.communicate()
+                    except Exception, e:
+                        bot.send_message(message.chat.id, str(e))
+                error = p.communicate()
                 p.wait()
+                if p.returncode != 0: 
+                    bot.send_message(message.chat.id, "error " + str(p.stdout.read()))
             except Exception, e:
                 error = "Error ocurred: " + str(e)
                 errorType = "Error type: " + str((e.__class__.__name__))
@@ -278,7 +296,7 @@ def run(message):
                 bot.send_message(message.chat.id, str(errorType)) 
 
 
-def register(file, user):
+def register(file, user):    # register user and allow him to access the system
     encryptedUser = encrypt(user)
     f = open(file, "a+")
     content = f.readlines()
@@ -288,7 +306,7 @@ def register(file, user):
     f.close
 
 
-def checkLogin(file, login):
+def checkLogin(file, login):    # check if user ID is on users.txt
     encryptedLogin = encrypt(login)
     check = False
     with open(file) as f:
@@ -299,7 +317,7 @@ def checkLogin(file, login):
     return check
 
 
-def registerLog(file, command):
+def registerLog(file, command):    # register user, id, date and command
     f = open(file, "a+")
     now = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S ")
     f.write(now + "[" + str(command.from_user.username) + " (" + str(command.chat.id) + ")] " + str(command.text) + "\n")

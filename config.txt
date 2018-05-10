@@ -34,12 +34,13 @@ password =
 # usersFile - Absolute path to users.txt. This file content is granted access users. Will be 
 # checked on every command the bot recieves. Users ID will be hashed and stored in order to
 # preserve anonymity. Default value is the directory remoteTelegramShell.py is located at.
-# Edit this parameter if you want to change the directory where users.txt will be stored.
+# It MUST be changed with absolute path.
 usersFile = ./users.txt
 
 
 # logFile - Absolute path to log.txt. This file registers user's ID and input besides the
 # date and time. Default value is the directory remoteTelegramShell.py is located at.
+# It MUST be changed with absolute path.
 logFile = ./log.txt
 
 

@@ -19,7 +19,7 @@ LOG = None    # log.txt path
 OS = None    # currently working on Linux
 LOGLIMIT = None    # max number of lines allowed
 APP = None    # currently working app is Telegram
-FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand"]    # non working commands
+FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand", "top", "vim"]    # non working commands
 
 
 def loadConfig(configFile):

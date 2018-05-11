@@ -41,8 +41,11 @@ in the same directory during the execution (you can't use "cd" to move to others
 
 Depending on the chosen directory it might be necessary to change access permissions of the files, this can be done with the following commands:
 __chmod +777 config.txt__
+
 __chmod +777 users.txt__
+
 __chmod +777 telegramShellBot.py__
+
 __chmod +777 log.txt__
 
 Last step is executing .py script and start using our computer through Telegram.

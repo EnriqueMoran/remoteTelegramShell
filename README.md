@@ -19,8 +19,35 @@ Commands are sent through python to CMD and excecuted. Command's output is captu
 
 
 ## Working commands
-Currently there are a set of working commands: most of generating output (on version v0.1_3.4.2). Commands that doesnt generate any kind of output will be received and executed  by the computer; commands that requires user input wont work yet, commands that open or execute files either.
-If errors occur on the execution of any command, it will be shown to user in real time.
+Currently there are a set of working commands: most of generating output (on version v0.2_6.7.5). Commands that doesnt generate any kind of output will be received and executed  by the computer; commands that requires user input wont work yet, commands that open or execute files either.
+If errors occur during the execution of any command, it will be shown to user in real time.
+
+
+
+## Instruction guide
+
+First step is downloading this project, this command can be used for it:
+**git clone https://github.com/EnriqueMoran/remoteTelegramShell.git**
+
+After cloning the repository in your own computer (it must be Linux OS), the following step is installing TelegramBotApi library:
+** pip install pyTelegramBotApi**
+
+On telegram we create a new bot (talk to *@BotFather*) and save its token.
+![alt tag](https://i.gyazo.com/783e4a87c8bc7dc75cff9a5c2343a8a2.png)
+
+Afterwards we edit the "config.txt" file and fill the blanks. The file paths must be absolute, if you use relative paths you have to stay
+in the same directory during the execution (you can't use "cd" to move to others directories). 
+![alt tag](https://i.gyazo.com/b2a8e9b5694498813d4261df77e21db8.png)
+
+Depending on the chosen directory it might be necessary to change access permissions of the files, this can be done with the following commands:
+**chmod +777 config.txt **
+**chmod +777 users.txt **
+**chmod +777 telegramShellBot.py **
+**chmod +777 log.txt **
+
+Last step is executing .py script and start using our computer through Telegram.
+![alt tag](https://i.gyazo.com/90245f73d0ffbb6b4d187bdd0637eebe.png)
+
 
 
 ## Versions

@@ -1,5 +1,5 @@
 # remoteTelegramShell
-remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's secure conection to send commands and receive messages from the computer. Has an user login system and root restriction in order to avoid malicious connections from other Telegram users. "pyTelegramBotApi" module is needed.
+remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's secure conection to send commands and receive messages from the computer. Has an user login system and root restriction in order to avoid malicious connections from other Telegram users. _"pyTelegramBotApi"_ module is needed.
 
 Also has a log file for tracking users input, that registers the date, command and user ID.
 
@@ -27,10 +27,10 @@ If errors occur during the execution of any command, it will be shown to user in
 ## Instruction guide
 
 First step is downloading this project, this command can be used for it:
-**git clone https://github.com/EnriqueMoran/remoteTelegramShell.git**
+__git clone https://github.com/EnriqueMoran/remoteTelegramShell.git__
 
 After cloning the repository in your own computer (it must be Linux OS), the following step is installing TelegramBotApi library:
-** pip install pyTelegramBotApi**
+__pip install pyTelegramBotApi__
 
 On telegram we create a new bot (talk to *@BotFather*) and save its token.
 ![alt tag](https://i.gyazo.com/783e4a87c8bc7dc75cff9a5c2343a8a2.png)
@@ -40,10 +40,10 @@ in the same directory during the execution (you can't use "cd" to move to others
 ![alt tag](https://i.gyazo.com/b2a8e9b5694498813d4261df77e21db8.png)
 
 Depending on the chosen directory it might be necessary to change access permissions of the files, this can be done with the following commands:
-**chmod +777 config.txt **
-**chmod +777 users.txt **
-**chmod +777 telegramShellBot.py **
-**chmod +777 log.txt **
+__chmod +777 config.txt__
+__chmod +777 users.txt__
+__chmod +777 telegramShellBot.py__
+__chmod +777 log.txt__
 
 Last step is executing .py script and start using our computer through Telegram.
 ![alt tag](https://i.gyazo.com/90245f73d0ffbb6b4d187bdd0637eebe.png)

@@ -40,6 +40,7 @@ in the same directory during the execution (you can't use "cd" to move to others
 ![alt tag](https://i.gyazo.com/b2a8e9b5694498813d4261df77e21db8.png)
 
 Depending on the chosen directory it might be necessary to change access permissions of the files, this can be done with the following commands:
+
 __chmod +777 config.txt__
 
 __chmod +777 users.txt__

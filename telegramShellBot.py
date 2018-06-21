@@ -29,39 +29,45 @@ def loadConfig(configFile):
     cont = 0
     read = False
     for line in temp:
-            if cont == 5 and line[:1] != "" and read == True:
-                APP = [file.strip() for file in line.split('=')][1]
-                read = False
-            if cont == 8 and line[:1] != "" and read == True:
-                OS = [file.strip() for file in line.split('=')][1]
-                read = False
-            if cont == 10 and line[:1] != "" and read == True:
-                VERSION = [file.strip() for file in line.split('=')][1]
-                read = False
-            if cont == 11 and line[:1] != "" and read == True:
-                TOKEN = [file.strip() for file in line.split('=')][1]
-                read = False
-            if cont == 14 and line[:1] != "" and read == True:
-                PASSWORD = [file.strip() for file in line.split('=')][1]
-                read = False
-            if cont == 18 and line[:1] != "" and read == True:
-                USERS = [file.strip() for file in line.split('=')][1]
-                read = False
-            if cont == 20 and line[:1] != "" and read == True:
-                LOG = [file.strip() for file in line.split('=')][1]
-                read = False
-            if cont == 21 and line[:1] != "" and read == True:
-                LOGLIMIT = int([file.strip() for file in line.split('=')][1])
-                read = False
-            if cont == 24 and line[:1] != "" and read == True:
-                ROOT = bool([file.strip() for file in line.split('=')][1])
-                read = False
-            if line[:1] == "#":
-                cont += 1
-                read = True
+        if cont == 5 and line[:1] != "" and read == True:
+            APP = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 8 and line[:1] != "" and read == True:
+            OS = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 10 and line[:1] != "" and read == True:
+            VERSION = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 11 and line[:1] != "" and read == True:
+            TOKEN = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 14 and line[:1] != "" and read == True:
+            PASSWORD = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 18 and line[:1] != "" and read == True:
+            USERS = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 21 and line[:1] != "" and read == True:
+            LOG = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 21 and line[:1] != "" and read == True:
+            LOGLIMIT = int([file.strip() for file in line.split('=')][1])
+            read = False
+        if cont == 25 and line[:1] != "" and read == True:
+            ROOT = bool([file.strip() for file in line.split('=')][1])
+            read = False
+        if line[:1] == "#":
+            cont += 1
+            read = True
 
 
-loadConfig("./configtest.txt")
+loadConfig("config.txt")
+
+f1 = open(LOG, "a+")
+f1.close
+f2 = open(USERS, "a+")
+f2.close
+
 bot = telebot.TeleBot(TOKEN)
 MARKUP = types.ForceReply(selective = False)
 
@@ -104,7 +110,7 @@ def install(message):    # install a package
                 bot.send_message(message.chat.id, package + " sucessfully installed.")
             else:
                 bot.send_message(message.chat.id, package + " not installed")
-    except Exception, e:
+    except Exception as e:
         error = "Error ocurred: " + str(e)
         errorType = "Error type: " + str((e.__class__.__name__))
         bot.send_message(message.chat.id, str(error))
@@ -128,7 +134,7 @@ def uninstall(message):    # uninstall a package
                 bot.send_message(message.chat.id, package + " sucessfully uninstalled.")
             else:
                 bot.send_message(message.chat.id, package + " not uninstalled")
-    except Exception, e:
+    except Exception as e:
         error = "Error ocurred: " + str(e)
         errorType = "Error type: " + str((e.__class__.__name__))
         bot.send_message(message.chat.id, str(error))
@@ -158,7 +164,7 @@ def update(message):    # update system
                 bot.send_message(message.chat.id, "Done")
             else:
                  bot.send_message(message.chat.id, "System not updated.")
-    except Exception, e:
+    except Exception as e:
         error = "Error ocurred: " + str(e)
         errorType = "Error type: " + str((e.__class__.__name__))
         bot.send_message(message.chat.id, str(error))
@@ -182,7 +188,7 @@ def upgrade(message):    # upgrade system
                 bot.send_message(message.chat.id, "Done")
             else:
                  bot.send_message(message.chat.id, "System not upgraded.")
-    except Exception, e:
+    except Exception as e:
         error = "Error ocurred: " + str(e)
         errorType = "Error type: " + str((e.__class__.__name__))
         bot.send_message(message.chat.id, str(error))
@@ -283,13 +289,13 @@ def run(message):
                 for line in iter(p.stdout.readline, b''):
                     try:
                         bot.send_message(message.chat.id, line)
-                    except Exception, e:
+                    except Exception as e:
                         bot.send_message(message.chat.id, str(e))
                 error = p.communicate()
                 p.wait()
                 if p.returncode != 0: 
                     bot.send_message(message.chat.id, "error " + str(p.stdout.read()))
-            except Exception, e:
+            except Exception as e:
                 error = "Error ocurred: " + str(e)
                 errorType = "Error type: " + str((e.__class__.__name__))
                 bot.send_message(message.chat.id, str(error))

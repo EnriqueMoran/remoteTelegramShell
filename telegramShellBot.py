@@ -19,7 +19,7 @@ LOG = None    # log.txt path
 OS = None    # currently working on Linux
 LOGLIMIT = None    # max number of lines allowed
 APP = None    # currently working app is Telegram
-FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand", "top", "vim"]    # non working commands
+FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand", "top", "vim", "man", "apt-get", "poweroff", "reboot", "ssh", "scp", "wc"]    # non working commands
 
 
 def loadConfig(configFile):
@@ -296,10 +296,11 @@ def run(message):
                 if p.returncode != 0: 
                     bot.send_message(message.chat.id, "error " + str(p.stdout.read()))
             except Exception as e:
-                error = "Error ocurred: " + str(e)
-                errorType = "Error type: " + str((e.__class__.__name__))
+                #error = "Error ocurred: " + str(e)
+                #errorType = "Error type: " + str((e.__class__.__name__))
+                error = "Error: Command not found"
                 bot.send_message(message.chat.id, str(error))
-                bot.send_message(message.chat.id, str(errorType)) 
+                #bot.send_message(message.chat.id, str(errorType)) 
 
 
 def register(file, user):    # register user and allow him to access the system

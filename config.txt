@@ -10,7 +10,7 @@
 appdevice = Telegram
 
 
-# Operative System - Choose between "Linux" and "Windows" OS, although user inputs commands, 
+# Operative System - Choose between "Linux" and "Windows" OS, although user inputs commands,
 # there are a set of pre established commands that depends on the OS in which 
 # remoteTelegramShell.py is running.
 os = Linux
@@ -18,7 +18,7 @@ os = Linux
 
 # Version - This parameter is automatically filled. Current version will be shown on /help
 # option. Please do not modify.
-version = v0.2_6.7.5
+version = v1.0
 
 
 # TOKEN - This is bot auth token, necessary to connect bot to Telegram device.
@@ -26,12 +26,12 @@ token =
 
 
 # Password - New users will need to use it in order to access to the service. Logged users
-# ID will be stored in users.txt. If there are users stored and you want to change the 
+# ID will be stored in users.txt. If there are users stored and you want to change the
 # password, you MUST delete users.txt file or its content.
 password = 
 
 
-# usersFile - Absolute path to users.txt. This file content is granted access users. Will be 
+# usersFile - Absolute path to users.txt. This file content is granted access users. Will be
 # checked on every command the bot recieves. Users ID will be hashed and stored in order to
 # preserve anonymity. Default value is the directory remoteTelegramShell.py is located at.
 # It MUST be changed with absolute path.

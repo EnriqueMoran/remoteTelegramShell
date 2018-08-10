@@ -1,5 +1,5 @@
 # remoteTelegramShell
-remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's secure conection to send commands and receive messages from the computer. Has an user login system and root restriction in order to avoid malicious connections from other Telegram users. _"pyTelegramBotApi"_ module is needed.
+remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's secure conection to send commands and receive messages from the computer. Has an user login system and root restriction in order to avoid malicious connections from other Telegram users. _"pyTelegramBotApi"_ and _"telebot"_ modules are needed. This tool is specially useful for those computers that have ssh port closed.
 
 Also has a log file for tracking users input, that registers the date, command and user ID.
 
@@ -27,6 +27,7 @@ If errors occur during the execution of any command, it will be shown to user in
 ## Instruction guide
 
 First step is downloading this project, this command can be used for it:
+
 __git clone https://github.com/EnriqueMoran/remoteTelegramShell.git__
 
 After cloning the repository in your own computer (it must be Linux OS), the following step is installing TelegramBotApi library:

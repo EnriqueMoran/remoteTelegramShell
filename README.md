@@ -27,43 +27,37 @@ If errors occur during the execution of any command, it will be shown to user in
 ## Instruction guide
 
 First step is downloading this project, this command can be used for it:
+```
+git clone https://github.com/EnriqueMoran/remoteTelegramShell.git
+```
 
-__git clone https://github.com/EnriqueMoran/remoteTelegramShell.git__
-
-After cloning the repository in your own computer (it must be Linux OS), the following step is installing TelegramBotApi library:
-__pip install pyTelegramBotApi__
-
+After cloning the repository in your own computer (it must be Linux OS), the following step is installing TelegramBotApi library (using command line):
+```
+pip install pyTelegramBotApi
+```
 On telegram we create a new bot (talk to *@BotFather*) and save its token.
+
 ![alt tag](https://i.gyazo.com/783e4a87c8bc7dc75cff9a5c2343a8a2.png)
 
 Afterwards we edit the "config.txt" file and fill the blanks. The file paths must be absolute, if you use relative paths you have to stay
 in the same directory during the execution (you can't use "cd" to move to others directories). 
+
 ![alt tag](https://i.gyazo.com/b2a8e9b5694498813d4261df77e21db8.png)
 
 Depending on the chosen directory it might be necessary to change access permissions of the files, this can be done with the following commands:
+```
+chmod +777 config.txt
 
-__chmod +777 config.txt__
+chmod +777 users.txt
 
-__chmod +777 users.txt__
+chmod +777 telegramShellBot.py
 
-__chmod +777 telegramShellBot.py__
-
-__chmod +777 log.txt__
-
+chmod +777 log.txt
+```
 Last step is executing .py script and start using our computer through Telegram.
+
 ![alt tag](https://i.gyazo.com/90245f73d0ffbb6b4d187bdd0637eebe.png)
 
-
-
-## Versions
-Version syntax is the following: 
-
-![alt tag](https://i.gyazo.com/b943366e012976f46e30489896511b87.png)
-
-* **Main version:** Functional version that meets a series of objectives and requirements.
-* **User interface:** Current user input interface version.
-* **Code:** Code and functionalities implementation.
-* **Bug fixes:** Bugs and errors fixes.
 
 
 ## Version history

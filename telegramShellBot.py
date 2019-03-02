@@ -60,8 +60,8 @@ def loadConfig(configFile):
             cont += 1
             read = True
 
-
-loadConfig("config.txt")
+configPath = os.getcwd() + "/config.txt"
+loadConfig(configPath)
 
 f1 = open(LOG, "a+")
 f1.close

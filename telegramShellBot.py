@@ -3,6 +3,7 @@ import os
 import datetime
 import hashlib
 import telebot
+import time
 from telebot import types
 
 
@@ -16,24 +17,26 @@ VERSION = None
 PASSWORD = None
 USERS = None    # users.txt path
 LOG = None    # log.txt path
-OS = None    # currently working on Linux
+SHAREFOLDER = None    # currently working on Linux
 LOGLIMIT = None    # max number of lines allowed
 APP = None    # currently working app is Telegram
-FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand", "top", "vim", "man", "apt-get", "poweroff", "reboot", "ssh", "scp", "wc"]    # non working commands
+FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand", "vim", "man", "apt-get", "poweroff", "reboot", "ssh", "scp", "wc"]    # non working commands
 
 
 def loadConfig(configFile):
-    global VERSION, TOKEN, PASSWORD, USERS, LOG, LOGLIMIT, ROOT, OS, APP
+    global VERSION, TOKEN, PASSWORD, USERS, LOG, LOGLIMIT, ROOT, SHAREFOLDER, APP
+
     file = open(configFile, "r")
     temp = file.read().splitlines()
     cont = 0
     read = False
+
     for line in temp:
         if cont == 5 and line[:1] != "" and read == True:
             APP = [file.strip() for file in line.split('=')][1]
             read = False
         if cont == 8 and line[:1] != "" and read == True:
-            OS = [file.strip() for file in line.split('=')][1]
+            SHAREFOLDER = [file.strip() for file in line.split('=')][1]
             read = False
         if cont == 10 and line[:1] != "" and read == True:
             VERSION = [file.strip() for file in line.split('=')][1]
@@ -99,6 +102,7 @@ def install(message):    # install a package
         if checkLogin(USERS, message.chat.id):
             package = message.text
             proc = subprocess.Popen('sudo apt-get install -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
+            
             while True:
                 output = proc.stdout.readline()
                 if output == '' and proc.poll() is not None:
@@ -106,6 +110,7 @@ def install(message):    # install a package
                 if output:
                     bot.send_message(message.chat.id, output.strip())
             proc.wait()
+
             if proc.poll() == 0:
                 bot.send_message(message.chat.id, package + " sucessfully installed.")
             else:
@@ -123,6 +128,7 @@ def uninstall(message):    # uninstall a package
         if checkLogin(USERS, message.chat.id):
             package = message.text
             proc = subprocess.Popen('sudo apt-get --purge remove -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
+            
             while True:
                 output = proc.stdout.readline()
                 if output == '' and proc.poll() is not None:
@@ -130,6 +136,7 @@ def uninstall(message):    # uninstall a package
                 if output:
                     bot.send_message(message.chat.id, output.strip())
             proc.wait()
+            
             if proc.poll() == 0:
                 bot.send_message(message.chat.id, package + " sucessfully uninstalled.")
             else:
@@ -154,6 +161,7 @@ def update(message):    # update system
             action = message.text
             if action == "yes":
                 proc = subprocess.Popen('sudo apt-get update -y', shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
+                
                 while True:
                     output = proc.stdout.readline()
                     if output == '' and proc.poll() is not None:
@@ -161,7 +169,7 @@ def update(message):    # update system
                     if output:
                         bot.send_message(message.chat.id, output.strip())
                 proc.wait()
-                bot.send_message(message.chat.id, "Done")
+                bot.send_message(message.chat.id, "System updated sucessfully.")
             else:
                  bot.send_message(message.chat.id, "System not updated.")
     except Exception as e:
@@ -178,6 +186,7 @@ def upgrade(message):    # upgrade system
             action = message.text
             if action == "yes":
                 proc = subprocess.Popen('sudo apt-get upgrade -y', shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
+                
                 while True:
                     output = proc.stdout.readline()
                     if output == '' and proc.poll() is not None:
@@ -185,7 +194,7 @@ def upgrade(message):    # upgrade system
                     if output:
                         bot.send_message(message.chat.id, output.strip())
                 proc.wait()
-                bot.send_message(message.chat.id, "Done")
+                bot.send_message(message.chat.id, "System upgraded sucessfully.")
             else:
                  bot.send_message(message.chat.id, "System not upgraded.")
     except Exception as e:
@@ -244,7 +253,7 @@ def send_welcome(message):
     registerLog(LOG, message)
     bot.send_message(message.chat.id, "Current version: " + VERSION)
     bot.send_message(message.chat.id, "Welcome to telegramShell, this bot allows you to remotely control a computer terminal.")
-    bot.send_message(message.chat.id, "List os avaliable commands: \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To view forbidden commands use /forbidden \n- To use the rest of the commands use /run")
+    bot.send_message(message.chat.id, "List of avaliable commands: \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To view forbidden commands use /forbidden \n- To use the rest of the commands use /run")
 
 
 @bot.message_handler(commands = ['run'])
@@ -255,16 +264,20 @@ def run(message):
         bot.send_message(message.chat.id, "You can write commands now.")
     elif checkLogin(USERS, message.chat.id):
         command = message.text
+
         if command[0:2] == "cd":
             try:
                 os.chdir(message.text[3:])
                 bot.send_message(message.chat.id,"Current directory: " + str(os.getcwd()))
             except Exception as e:
                 bot.send_message(message.chat.id, str(e))
+
         elif command.split()[0] in FORBIDDENCOMMANDS:
             bot.send_message(message.chat.id,"Forbidden command.")
+
         elif command[0:4] == "sudo" and not ROOT:
             bot.send_message(message.chat.id,"root commands are disabled.")
+
         elif command[0:4] == "ping" and len(command.split()) == 2:    # infinite ping fix
             ip = str(command).split()[1]
             com = "ping " + str(ip) + " -c 4"
@@ -283,14 +296,39 @@ def run(message):
                 errorType = "Error type: " + str((e.__class__.__name__))
                 bot.send_message(message.chat.id, str(error))
                 bot.send_message(message.chat.id, str(errorType))
+
+        elif command[0:3] == "top":
+            try:
+                com = "top -b -n 1 | awk '{print $1, $2, $5, $8, $9, $10, $NF}' > top.txt"
+                p = subprocess.Popen(com, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
+                time.sleep(1)
+
+                com = "cat top.txt"    
+                p = subprocess.Popen(com, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
+                
+                for line in iter(p.stdout.readline, b''):
+                    try:
+                        bot.send_message(message.chat.id, line)
+                    except:
+                        pass
+
+                time.sleep(1)
+                com = "rm top.txt"
+                p = subprocess.Popen(com, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
+            except Exception as e:
+                            bot.send_message(message.chat.id, str(e))
+
         else:
             try:
                 p = subprocess.Popen(command, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
                 for line in iter(p.stdout.readline, b''):
-                    try:
-                        bot.send_message(message.chat.id, line)
-                    except Exception as e:
-                        bot.send_message(message.chat.id, str(e))
+                    if len(str(line)) == 5:    # Empty message that raises api error
+                        bot.send_message(message.chat.id, "܁")    # Send special character (U+0701)
+                    else:
+                        try:
+                            bot.send_message(message.chat.id, line)
+                        except Exception as e:
+                            bot.send_message(message.chat.id, str(e))
                 error = p.communicate()
                 p.wait()
                 if p.returncode != 0: 
@@ -300,7 +338,7 @@ def run(message):
                 #errorType = "Error type: " + str((e.__class__.__name__))
                 error = "Error: Command not found"
                 bot.send_message(message.chat.id, str(error))
-                #bot.send_message(message.chat.id, str(errorType)) 
+                #bot.send_message(message.chat.id, str(errorType))
 
 
 def register(file, user):    # register user and allow him to access the system

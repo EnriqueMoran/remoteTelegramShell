@@ -10,15 +10,15 @@
 appdevice = Telegram
 
 
-# Operative System - Choose between "Linux" and "Windows" OS, although user inputs commands,
-# there are a set of pre established commands that depends on the OS in which 
-# remoteTelegramShell.py is running.
-os = Linux
+# File sharing folder - Absolute path to file sharing folder. All files sent through
+# drag and drop will be stored in this folder, dont choose a root-protected one.
+# 
+shareFolder = 
 
 
 # Version - This parameter is automatically filled. Current version will be shown on /help
 # option. Please do not modify.
-version = v1.1
+version = v1.1.2
 
 
 # TOKEN - This is bot auth token, necessary to connect bot to Telegram device.

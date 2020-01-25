@@ -10,6 +10,7 @@ from telebot import types
 
 __author__ = "EnriqueMoran"
 
+version = "v1.2.0"
 
 
 TOKEN = None
@@ -17,14 +18,13 @@ VERSION = None
 PASSWORD = None
 USERS = None    # users.txt path
 LOG = None    # log.txt path
-SHAREFOLDER = None    # currently working on Linux
-LOGLIMIT = None    # max number of lines allowed
-APP = None    # currently working app is Telegram
+SHAREFOLDER = None    # shared files storage folder
+LOGLIMIT = None    # max number of lines to register
 FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand", "vim", "man", "apt-get", "poweroff", "reboot", "ssh", "scp", "wc"]    # non working commands
 
 
 def loadConfig(configFile):
-    global VERSION, TOKEN, PASSWORD, USERS, LOG, LOGLIMIT, ROOT, SHAREFOLDER, APP
+    global VERSION, TOKEN, PASSWORD, USERS, LOG, LOGLIMIT, ROOT, SHAREFOLDER
 
     file = open(configFile, "r")
     temp = file.read().splitlines()
@@ -33,30 +33,27 @@ def loadConfig(configFile):
 
     for line in temp:
         if cont == 5 and line[:1] != "" and read == True:
-            APP = [file.strip() for file in line.split('=')][1]
-            read = False
-        if cont == 8 and line[:1] != "" and read == True:
             SHAREFOLDER = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 10 and line[:1] != "" and read == True:
+        if cont == 7 and line[:1] != "" and read == True:
             VERSION = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 11 and line[:1] != "" and read == True:
+        if cont == 8 and line[:1] != "" and read == True:
             TOKEN = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 14 and line[:1] != "" and read == True:
+        if cont == 11 and line[:1] != "" and read == True:
             PASSWORD = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 18 and line[:1] != "" and read == True:
+        if cont == 15 and line[:1] != "" and read == True:
             USERS = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 21 and line[:1] != "" and read == True:
+        if cont == 18 and line[:1] != "" and read == True:
             LOG = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 21 and line[:1] != "" and read == True:
+        if cont == 19 and line[:1] != "" and read == True:
             LOGLIMIT = int([file.strip() for file in line.split('=')][1])
             read = False
-        if cont == 25 and line[:1] != "" and read == True:
+        if cont == 22 and line[:1] != "" and read == True:
             ROOT = bool([file.strip() for file in line.split('=')][1])
             read = False
         if line[:1] == "#":
@@ -100,21 +97,30 @@ def install(message):    # install a package
     registerLog(LOG, message)
     try:
         if checkLogin(USERS, message.chat.id):
-            package = message.text
-            proc = subprocess.Popen('sudo apt-get install -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
-            
-            while True:
-                output = proc.stdout.readline()
-                if output == '' and proc.poll() is not None:
-                    break
-                if output:
-                    bot.send_message(message.chat.id, output.strip())
-            proc.wait()
+            if message.text != 'cancel':
+                package = message.text
+                proc = subprocess.Popen('sudo apt-get install -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
+                alreadyInstalled = False
 
-            if proc.poll() == 0:
-                bot.send_message(message.chat.id, package + " sucessfully installed.")
+                while True:
+                    output = proc.stdout.readline()
+                    alreadyInstalled = alreadyInstalled or "0 newly installed" in str(output)
+                    if output == b'' and proc.poll() is not None:
+                        break
+                    elif output:
+                        bot.send_message(message.chat.id, output.strip())
+                proc.wait()
+
+                if alreadyInstalled:
+                    pass    # dont send any message
+                elif proc.poll() == 0:
+                    bot.send_message(message.chat.id, package + " sucessfully installed.")
+                elif proc.poll() == 100:
+                    bot.send_message(message.chat.id, "Unable to locate package " + package + ".")
+                else:
+                    bot.send_message(message.chat.id, package + " not installed. Error code: " + str(proc.poll()))
             else:
-                bot.send_message(message.chat.id, package + " not installed")
+                bot.send_message(message.chat.id, "action canceled.")
     except Exception as e:
         error = "Error ocurred: " + str(e)
         errorType = "Error type: " + str((e.__class__.__name__))
@@ -126,21 +132,28 @@ def uninstall(message):    # uninstall a package
     registerLog(LOG, message)
     try:
         if checkLogin(USERS, message.chat.id):
-            package = message.text
-            proc = subprocess.Popen('sudo apt-get --purge remove -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
-            
-            while True:
-                output = proc.stdout.readline()
-                if output == '' and proc.poll() is not None:
-                    break
-                if output:
-                    bot.send_message(message.chat.id, output.strip())
-            proc.wait()
-            
-            if proc.poll() == 0:
-                bot.send_message(message.chat.id, package + " sucessfully uninstalled.")
+            if message.text != 'cancel':
+                package = message.text
+                proc = subprocess.Popen('sudo apt-get --purge remove -y ' + package, shell = True, stdin = None, stdout = subprocess.PIPE, executable = "/bin/bash")
+                alreadyUninstalled = False
+
+                while True:
+                    output = proc.stdout.readline()
+                    alreadyUninstalled = alreadyUninstalled or "0 to remove" in str(output)
+                    if output == b'' and proc.poll() is not None:
+                        break
+                    if output:
+                        bot.send_message(message.chat.id, output.strip())
+                proc.wait()
+
+                if alreadyUninstalled:
+                    pass    # dont send any message
+                elif proc.poll() == 0:
+                    bot.send_message(message.chat.id, package + " sucessfully uninstalled.")
+                else:
+                    bot.send_message(message.chat.id, package + " not uninstalled. Error code: " + str(proc.poll()))
             else:
-                bot.send_message(message.chat.id, package + " not uninstalled")
+                bot.send_message(message.chat.id, "action canceled.")
     except Exception as e:
         error = "Error ocurred: " + str(e)
         errorType = "Error type: " + str((e.__class__.__name__))
@@ -231,7 +244,7 @@ def updateCommand(message):
 def installCommand(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id) and message.text == "/install":
-        bot.send_message(message.chat.id, "Write package name.")
+        bot.send_message(message.chat.id, "Write package name to install or 'cancel' to exit.")
         bot.register_next_step_handler(message, install)
 
 
@@ -239,7 +252,7 @@ def installCommand(message):
 def uninstallCommand(message):
     registerLog(LOG, message)
     if checkLogin(USERS, message.chat.id) and message.text == "/uninstall":
-        bot.send_message(message.chat.id, "Write package name.")
+        bot.send_message(message.chat.id, "Write package name to uninstall or 'cancel' to exit.")
         bot.register_next_step_handler(message, uninstall)
 
 

@@ -1,18 +1,18 @@
 # remoteTelegramShell
-remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's secure conection to send commands and receive messages from the computer. Has an user login system and root restriction in order to avoid malicious connections from other Telegram users. _"pyTelegramBotApi"_ and _"telebot"_ modules are needed. This tool is specially useful if you want to connect to a computer that is behind a private network without opening ports.
+remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's conection to send commands and receive messages from the computer. It has an user login system and root restriction in order to avoid malicious connections from other Telegram users. _"pyTelegramBotApi"_ module is needed. This tool is specially useful if you want to connect to a computer that is behind a private network without opening ports or just want to control your computer through Telegram, without using any other ssh client.
 
-Also has a log file for tracking users input, that registers the date, command and user ID.
+It also has a log file for tracking users input, that registers the date, command and user ID.
 
 ![alt tag](/readme_images/gif1.gif)
 
 
 ## How it works
-In order to access to computer control, Telegram users must log into the system. IDs of users who write the password correctly will be stored in a text file that grant future accesses. 
+To access to computer control, Telegram users must log into the system. IDs of users who write the password correctly will be stored in a protected text file that allows future access. 
 
-Once the user is logged in, commands can be sent. Linux computer receives and executes them from telegram bot, command output will be shown to user on Telegram in real time.
+Once the user is logged in, commands can be sent. Linux computer receives and executes them from telegram bot, commands output will be shown to user on Telegram in real time.
 
 Telegram bot is running on computer's side. Commands are sent from any (authorized) Telegram client and received by Telegram bot. 
-Commands are sent through python to CMD and excecuted, the output is captured by and sent in real time to the user.
+Commands are sent through python to CMD and excecuted, the output is captured and sent in real time to the user.
 
 ![alt tag](/readme_images/image1.png)
 
@@ -25,13 +25,13 @@ If errors occur during the execution of any command, it will be reported to the 
 
 
 ## Supported distros
-Debian and Ubuntu based distros can update and upgrade the system, also install and uninstall packages (using apt-get). 
+Debian and Ubuntu based distros can be updated and upgraded, install and uninstall packages aswell. 
 I am currently working on adding support for the rest of package managers.
 
 
 
-## Instruction guide
-First step is downloading this project, this command can be used for it:
+## Installation guide
+First step is downloading this project, use this command:
 ```
 git clone https://github.com/EnriqueMoran/remoteTelegramShell.git
 ```
@@ -40,11 +40,11 @@ After cloning the repository in your own computer (it must be Linux OS), the fol
 ```
 pip install pyTelegramBotApi
 ```
-On telegram, create a new bot (talk to *@BotFather*) and save its token.
+On telegram, create a new bot (talk to *@BotFather*) and save the token.
 
 ![alt tag](/readme_images/image2.png)
 
-Afterwards edit "config.txt" file and fill the blanks. The file paths MUST be absolute, if you use relative paths you have to stay
+Afterwards edit "config.txt" file and fill the blanks. The files paths MUST be absolute, if you use relative paths you have to stay
 in the same directory during the execution (you can't use "cd" to move to others directories) and wont be able to run the script on boot (using crontab). 
 
 ![alt tag](/readme_images/image3.png)

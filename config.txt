@@ -12,7 +12,7 @@ shareFolder =
 
 # Version - This parameter is automatically filled. Current version will be shown on /help
 # option. Please do not modify.
-version = v1.2.0
+version = v1.2.1
 
 
 # TOKEN - This is bot auth token, necessary to connect bot to Telegram device.

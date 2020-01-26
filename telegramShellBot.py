@@ -18,6 +18,7 @@ VERSION = None
 PASSWORD = None
 USERS = None    # users.txt path
 LOG = None    # log.txt path
+LOGLINES = 0
 SHAREFOLDER = None    # shared files storage folder
 LOGLIMIT = None    # max number of lines to register
 FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano", "dc", "htop", "ex", "expand", "vim", "man", "apt-get", "poweroff", "reboot", "ssh", "scp", "wc"]    # non working commands
@@ -72,15 +73,48 @@ bot = telebot.TeleBot(TOKEN)
 MARKUP = types.ForceReply(selective = False)
 
 
-
 @bot.message_handler(commands = ['start'])
 def send_welcome(message):
     registerLog(LOG, message)
-    if checkLogin(USERS, message.chat.id):
-        bot.send_message(message.chat.id, "Welcome, use /run to start or /help to view info about avaliable commands.")
+    if not checkConfig(message):
+        if checkLogin(USERS, message.chat.id):
+            bot.send_message(message.chat.id, "Welcome, use /run to start or /help to view info about avaliable commands.")
+        else:
+            msg = bot.send_message(message.chat.id, "Please log in, insert password.", reply_markup = MARKUP)
+            bot.register_next_step_handler(msg, validate)
     else:
-        msg = bot.send_message(message.chat.id, "Please log in, insert password.", reply_markup = MARKUP)
-        bot.register_next_step_handler(msg, validate)
+        bot.send_message(message.chat.id, "Please add the necessary data to configuration file and use /start command.")
+
+
+def checkConfig(message):
+    error = False
+    error_msg = "Config file not properly filled, errors:"
+    if SHAREFOLDER == "":
+        error = True
+        error_msg += "\n- Share Folder path field is empty."
+    if PASSWORD == "":
+        error = True
+        error_msg += "\n- Password field is empty."
+    if USERS == "":
+        error = True
+        error_msg += "\n- Users File path field is empty."
+    if "./" in USERS:
+        error = True
+        error_msg += "\n- Users File path is relative."
+    if LOG == "":
+        error = True
+        error_msg += "\n- Log File path field is empty."
+    if "./" in LOG:
+        error = True
+        error_msg += "\n- Log File path is relative."
+    if LOGLIMIT == "":
+        error = True
+        error_msg += "\n- Log limit field is empty."
+    if ROOT == "":
+        error = True
+        error_msg += "\n- Root field is empty."
+    bot.send_message(message.chat.id, error_msg)
+    return error
 
 
 def validate(message):
@@ -177,12 +211,16 @@ def update(message):    # update system
                 
                 while True:
                     output = proc.stdout.readline()
-                    if output == '' and proc.poll() is not None:
+                    if output == b'' and proc.poll() is not None:
                         break
                     if output:
                         bot.send_message(message.chat.id, output.strip())
                 proc.wait()
-                bot.send_message(message.chat.id, "System updated sucessfully.")
+
+                if proc.poll() == 0:
+                    bot.send_message(message.chat.id, "System updated sucessfully.")
+                else:
+                    bot.send_message(message.chat.id, "System not updated, error code: " + str(proc.poll()))
             else:
                  bot.send_message(message.chat.id, "System not updated.")
     except Exception as e:
@@ -202,12 +240,16 @@ def upgrade(message):    # upgrade system
                 
                 while True:
                     output = proc.stdout.readline()
-                    if output == '' and proc.poll() is not None:
+                    if output == b'' and proc.poll() is not None:
                         break
                     if output:
                         bot.send_message(message.chat.id, output.strip())
                 proc.wait()
-                bot.send_message(message.chat.id, "System upgraded sucessfully.")
+
+                if proc.poll() == 0:
+                    bot.send_message(message.chat.id, "System upgraded sucessfully.")
+                else:
+                    bot.send_message(message.chat.id, "System not upgraded, error code: " + str(proc.poll()))
             else:
                  bot.send_message(message.chat.id, "System not upgraded.")
     except Exception as e:

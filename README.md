@@ -80,3 +80,4 @@ Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/rel
 - **v1.0:** (6/21/18) Official release. Critical and minor bug fixed. New forbidden commands added.
 - **v1.1.2:** (3/8/19) Typo correction, top command added, Telegram API 400 Bad Request error fixed.
 - **v1.2.0:** (1/25/20) Install and uninstall package infinite loop fixed, config.txt and readme modified.
+- **v1.2.1:** (1/26/20) Update and upgrade system infinite loop fixed, config parameters checker added.

@@ -10,7 +10,7 @@ from telebot import types
 
 __author__ = "EnriqueMoran"
 
-version = "v1.2.0"
+version = "v1.3.0"
 
 
 TOKEN = None
@@ -25,7 +25,7 @@ FORBIDDENCOMMANDS = ["wait", "exit", "clear", "aptitude", "raspi-config", "nano"
 
 
 def loadConfig(configFile):
-    global VERSION, TOKEN, PASSWORD, USERS, LOG, LOGLIMIT, ROOT, SHAREFOLDER
+    global VERSION, TOKEN, PASSWORD, USERS, LOG, LOGLIMIT, ROOT, SHAREFOLDER, LOGLINES
 
     file = open(configFile, "r")
     temp = file.read().splitlines()
@@ -69,6 +69,8 @@ f1.close
 f2 = open(USERS, "a+")
 f2.close
 
+os.makedirs(SHAREFOLDER, exist_ok=True)
+
 bot = telebot.TeleBot(TOKEN)
 MARKUP = types.ForceReply(selective = False)
 
@@ -89,7 +91,7 @@ def send_welcome(message):
 def checkConfig(message):
     error = False
     error_msg = "Config file not properly filled, errors:"
-    if SHAREFOLDER == "":
+    if "./" in SHAREFOLDER:
         error = True
         error_msg += "\n- Share Folder path field is empty."
     if PASSWORD == "":
@@ -309,6 +311,7 @@ def send_welcome(message):
     bot.send_message(message.chat.id, "Current version: " + VERSION)
     bot.send_message(message.chat.id, "Welcome to telegramShell, this bot allows you to remotely control a computer terminal.")
     bot.send_message(message.chat.id, "List of avaliable commands: \n- To install packages use /install \n- To update system use /update \n- To upgrade system use /upgrade \n- To view forbidden commands use /forbidden \n- To use the rest of the commands use /run")
+    bot.send_message(message.chat.id, "You can send files to the computer, also download by using getfile + path (e.g. getfile /home/user/Desktop/file.txt).")
 
 
 @bot.message_handler(commands = ['run'])
@@ -319,7 +322,6 @@ def run(message):
         bot.send_message(message.chat.id, "You can write commands now.")
     elif checkLogin(USERS, message.chat.id):
         command = message.text
-
         if command[0:2] == "cd":
             try:
                 os.chdir(message.text[3:])
@@ -373,6 +375,15 @@ def run(message):
             except Exception as e:
                             bot.send_message(message.chat.id, str(e))
 
+        elif command[0:7] == "getfile":
+            filePath = os.path.join(message.text[7:].strip())
+            if os.path.isfile(filePath):
+                bot.send_message(message.chat.id, "Sending file.")
+                doc = open(filePath, 'rb')
+                bot.send_document(message.chat.id, doc)
+            else:
+                bot.send_message(message.chat.id, "File doesnt exists.")
+
         else:
             try:
                 p = subprocess.Popen(command, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
@@ -395,6 +406,18 @@ def run(message):
                 bot.send_message(message.chat.id, str(error))
                 #bot.send_message(message.chat.id, str(errorType))
 
+@bot.message_handler(content_types=['document'])
+def saveDoc(doc):
+    fileInfo = bot.get_file(doc.document.file_id)
+    downloadedFile = bot.download_file(fileInfo.file_path)
+    filepath = SHAREFOLDER + '\\' +  doc.document.file_name
+    with open(filepath, 'wb') as newFile:
+        newFile.write(downloadedFile)
+    bot.send_message(message.chat.id,"File received.")
+
+@bot.message_handler(content_types=['photo'])
+def savePhoto(doc):
+    bot.send_message(message.chat.id,"To save images send it as file.")
 
 def register(file, user):    # register user and allow him to access the system
     encryptedUser = encrypt(user)
@@ -418,13 +441,21 @@ def checkLogin(file, login):    # check if user ID is on users.txt
 
 
 def registerLog(file, command):    # register user, id, date and command
+    # LOGLINES += 1
     f = open(file, "a+")
     now = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S ")
     f.write(now + "[" + str(command.from_user.username) + " (" + str(command.chat.id) + ")] " + str(command.text) + "\n")
     f.close()
 
+def getFile(msg):
+    print("content: ", msg.content_type)
+    fileInfo = bot.get_file(msg.document)
+    print("file: ", fileInfo)
+    downloadedFile = bot.download_file(fileInfo.file_path)
+    with open("test", wb) as newFile:
+        newFile.rite(ownloadedFile)
 
 
 if __name__ == "__main__":
-
+    print("Bot running...")
     bot.polling(none_stop = True)

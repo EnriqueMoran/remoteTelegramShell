@@ -7,12 +7,12 @@
 
 # File sharing folder - Absolute path to file sharing folder. All files sent through
 # drag and drop will be stored there, dont choose a root-protected one.
-shareFolder = 
+shareFolder = ./shareFolder
 
 
 # Version - This parameter is automatically filled. Current version will be shown on /help
 # option. Please do not modify.
-version = v1.2.1
+version = v1.3.0
 
 
 # TOKEN - This is bot auth token, necessary to connect bot to Telegram device.

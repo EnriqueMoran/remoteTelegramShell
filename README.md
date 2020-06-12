@@ -68,6 +68,12 @@ python3 telegramShellBot.py &              (this will run the script in backgrou
 ![alt tag](/readme_images/image4.png)
 
 
+## Sending and receiving files
+To send files just drag and drop on the chat, or click on send file button (images must be sent this way).
+To download files from the computer use "getfile + path" (e.g. getfile /home/user/Desktop/test-file.txt).
+
+![alt tag](/readme_images/gif2.gif)
+
 
 ## Version history
 Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/releases) for more info.
@@ -81,3 +87,11 @@ Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/rel
 - **v1.1.2:** (3/8/19) Typo correction, top command added, Telegram API 400 Bad Request error fixed.
 - **v1.2.0:** (1/25/20) Install and uninstall package infinite loop fixed, config.txt and readme modified.
 - **v1.2.1:** (1/26/20) Update and upgrade system infinite loop fixed, config parameters checker added.
+- **v1.3.1:** (6/12/20) File sending and receiving feature added.
+
+
+
+
+todo: agregar la sharedfolder
+hacer que se puedan eliminar usuarios desde telegram, que salga bonito, etc
+hacer que el loglimit funcione

@@ -115,7 +115,8 @@ def checkConfig(message):
     if ROOT == "":
         error = True
         error_msg += "\n- Root field is empty."
-    bot.send_message(message.chat.id, error_msg)
+    if error:
+        bot.send_message(message.chat.id, error_msg)
     return error
 
 
@@ -410,10 +411,10 @@ def run(message):
 def saveDoc(doc):
     fileInfo = bot.get_file(doc.document.file_id)
     downloadedFile = bot.download_file(fileInfo.file_path)
-    filepath = SHAREFOLDER + '\\' +  doc.document.file_name
-    with open(filepath, 'wb') as newFile:
+    filePath = SHAREFOLDER +  doc.document.file_name
+    with open(filePath, 'wb') as newFile:
         newFile.write(downloadedFile)
-    bot.send_message(message.chat.id,"File received.")
+    bot.send_message(doc.chat.id,f"File saved as {filePath}")
 
 @bot.message_handler(content_types=['photo'])
 def savePhoto(doc):

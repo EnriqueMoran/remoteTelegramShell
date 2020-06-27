@@ -88,3 +88,6 @@ Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/rel
 - **v1.2.0:** (1/25/20) Install and uninstall package infinite loop fixed, config.txt and readme modified.
 - **v1.2.1:** (1/26/20) Update and upgrade system infinite loop fixed, config parameters checker added.
 - **v1.3.1:** (6/12/20) File sending and receiving feature added.
+- **v1.3.2:** (6/27/20) Log limit fixed, several non generating output messages fixed, shareFolder parameter edited in config file.
+- **v1.3.3:** (6/27/20) PEP8 formatted code, top command changed to send a txt file instead of printing the whole message.
+

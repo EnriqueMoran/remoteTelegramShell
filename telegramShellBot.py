@@ -4,13 +4,14 @@ import datetime
 import hashlib
 import telebot
 import time
+import re
 from telebot import types
 
 
 
 __author__ = "EnriqueMoran"
 
-version = "v1.3.0"
+version = "v1.3.2"
 
 
 TOKEN = None
@@ -34,27 +35,27 @@ def loadConfig(configFile):
 
     for line in temp:
         if cont == 5 and line[:1] != "" and read == True:
-            SHAREFOLDER = [file.strip() for file in line.split('=')][1]
-            read = False
-        if cont == 7 and line[:1] != "" and read == True:
             VERSION = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 8 and line[:1] != "" and read == True:
+        if cont == 6 and line[:1] != "" and read == True:
             TOKEN = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 11 and line[:1] != "" and read == True:
+        if cont == 9 and line[:1] != "" and read == True:
             PASSWORD = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 15 and line[:1] != "" and read == True:
+        if cont == 12 and line[:1] != "" and read == True:
+            SHAREFOLDER = [file.strip() for file in line.split('=')][1]
+            read = False
+        if cont == 16 and line[:1] != "" and read == True:
             USERS = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 18 and line[:1] != "" and read == True:
+        if cont == 19 and line[:1] != "" and read == True:
             LOG = [file.strip() for file in line.split('=')][1]
             read = False
-        if cont == 19 and line[:1] != "" and read == True:
+        if cont == 20 and line[:1] != "" and read == True:
             LOGLIMIT = int([file.strip() for file in line.split('=')][1])
             read = False
-        if cont == 22 and line[:1] != "" and read == True:
+        if cont == 23 and line[:1] != "" and read == True:
             ROOT = bool([file.strip() for file in line.split('=')][1])
             read = False
         if line[:1] == "#":
@@ -68,6 +69,9 @@ f1 = open(LOG, "a+")
 f1.close
 f2 = open(USERS, "a+")
 f2.close
+
+with open(LOG) as f:
+    LOGLINES = sum(1 for _ in f)
 
 os.makedirs(SHAREFOLDER, exist_ok=True)
 
@@ -389,8 +393,9 @@ def run(message):
             try:
                 p = subprocess.Popen(command, stdout = subprocess.PIPE, shell = True, cwd = os.getcwd(), bufsize = 1)
                 for line in iter(p.stdout.readline, b''):
-                    if len(str(line)) == 5:    # Empty message that raises api error
-                        bot.send_message(message.chat.id, "܁")    # Send special character (U+0701)
+                    decoded = line.decode('windows-1252').strip()
+                    if len(re.sub('[^A-Za-z0-9]+', '', decoded)) <= 0:    # Empty message that raises api 400 error
+                        bot.send_message(message.chat.id, "܁")    # Send special blank character (U+0701)
                     else:
                         try:
                             bot.send_message(message.chat.id, line)
@@ -401,11 +406,8 @@ def run(message):
                 if p.returncode != 0: 
                     bot.send_message(message.chat.id, "error " + str(p.stdout.read()))
             except Exception as e:
-                #error = "Error ocurred: " + str(e)
-                #errorType = "Error type: " + str((e.__class__.__name__))
                 error = "Error: Command not found"
                 bot.send_message(message.chat.id, str(error))
-                #bot.send_message(message.chat.id, str(errorType))
 
 @bot.message_handler(content_types=['document'])
 def saveDoc(doc):
@@ -442,19 +444,16 @@ def checkLogin(file, login):    # check if user ID is on users.txt
 
 
 def registerLog(file, command):    # register user, id, date and command
-    # LOGLINES += 1
-    f = open(file, "a+")
-    now = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S ")
-    f.write(now + "[" + str(command.from_user.username) + " (" + str(command.chat.id) + ")] " + str(command.text) + "\n")
-    f.close()
-
-def getFile(msg):
-    print("content: ", msg.content_type)
-    fileInfo = bot.get_file(msg.document)
-    print("file: ", fileInfo)
-    downloadedFile = bot.download_file(fileInfo.file_path)
-    with open("test", wb) as newFile:
-        newFile.rite(ownloadedFile)
+    global LOGLINES, LOGLIMIT
+    LOGLINES += 1
+    with open(file, 'a+') as f:
+        now = datetime.datetime.now().strftime("%m-%d-%y %H:%M:%S ")
+        f.write(now + "[" + str(command.from_user.username) + " (" + str(command.chat.id) + ")]: " + str(command.text) + "\n")
+    if LOGLIMIT > 0 and LOGLINES > LOGLIMIT:
+        with open(file) as f:
+            lines = f.read().splitlines(True)
+        with open(file, 'w+') as f:
+            f.writelines(lines[abs(LOGLINES - LOGLIMIT):])
 
 
 if __name__ == "__main__":

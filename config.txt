@@ -5,14 +5,9 @@
 # this file and fill the following parameters in order to correctly configure the program.
 
 
-# File sharing folder - Absolute path to file sharing folder (ending in slash). All files 
-# sent through drag and drop will be stored there, dont choose a root-protected one.
-shareFolder = ./shareFolder/
-
-
 # Version - This parameter is automatically filled. Current version will be shown on /help
 # option. Please do not modify.
-version = v1.3.1
+version = v1.3.2
 
 
 # TOKEN - This is bot auth token, necessary to connect bot to Telegram device.
@@ -23,6 +18,12 @@ token =
 # ID will be stored in users.txt. If there are users stored and you want to change the
 # password, you MUST delete users.txt file or its content.
 password = 
+
+
+# File sharing folder - Absolute path to file sharing folder (ending in slash). All files 
+# sent through drag and drop will be stored there, dont choose a root-protected one.
+# It MUST be changed with absolute path, ending with slash.
+shareFolder = ./shareFolder/
 
 
 # usersFile - Absolute path to users.txt. This file content is allowed users. Will be

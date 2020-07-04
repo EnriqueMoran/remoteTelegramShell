@@ -63,8 +63,19 @@ python3 telegramShellBot.py &              (this will run the script in backgrou
 ## Sending and receiving files
 To send files just drag and drop on the chat, or click on send file button (images must be sent this way).
 To download files from the computer use "getfile + path" (e.g. getfile /home/user/Desktop/test-file.txt).
+**Important:** File sending can be done by any user, even if he hasn't logged in, this is currently being fixed.
 
 ![alt tag](/readme_images/gif2.gif)
+
+
+## Roadmap
+Future changes and features:
+* Improve compatibility with Linux distros (currently, install/uninstall commands uses apt-get).
+* Test and improve root option.
+* Improve security.
+* Fix no user checking file sending (critical).
+* Improve Windows compatibility.
+* Add parameter to allow file sending.
 
 
 ## Version history
@@ -82,4 +93,5 @@ Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/rel
 - **v1.3.1:** (6/12/20) File sending and receiving feature added.
 - **v1.3.2:** (6/27/20) Log limit fixed, several non generating output messages fixed, shareFolder parameter edited in config file.
 - **v1.3.3:** (6/27/20) PEP8 formatted code, top command changed to send a txt file instead of printing the whole message.
+
 

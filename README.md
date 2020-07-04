@@ -49,16 +49,8 @@ in the same directory during the execution (you can't use "cd" to move to others
 
 ![alt tag](/readme_images/image3.png)
 
-Depending on the chosen directory it might be necessary to change access permissions of the files, this can be done with the following commands:
-```
-chmod +777 config.txt
+Depending on the chosen directory and if sudo parameter is active, it might be necessary to change access permissions of the files, this can be done with chmod command.
 
-chmod +777 users.txt
-
-chmod +777 telegramShellBot.py
-
-chmod +777 log.txt
-```
 Last step is executing .py script and start using our computer through Telegram.
 ```
 python3 telegramShellBot.py

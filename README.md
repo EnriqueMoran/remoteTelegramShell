@@ -76,6 +76,7 @@ Future changes and features:
 * Fix no user checking file sending (critical).
 * Improve Windows compatibility.
 * Add parameter to allow file sending.
+* Add ctrl+c command.
 
 
 ## Version history

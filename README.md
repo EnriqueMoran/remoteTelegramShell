@@ -1,33 +1,45 @@
 # remoteTelegramShell
-remoteTelegramShell is a secure remote shell for Linux that makes use of Telegram's conection to send commands and receive messages from the computer. It has an user login system and root restriction in order to avoid malicious connections from other Telegram users. _"pyTelegramBotApi"_ module is needed. This tool is specially useful if you want to connect to a computer that is behind a private network without opening ports or just want to control your computer through Telegram, without using any other ssh client.
+remoteTelegramShell is a remote shell for Linux that makes use of Telegram's conection to send commands and receive their output from the computer.
+This tool is specially useful if you want to connect to a computer that is behind a private network without opening ports or just want to control your computer through Telegram, without using any ssh client.
 
-It also has a log file for tracking users input, that registers the date, command and user ID.
+Check [remoteDiscordShell](https://github.com/EnriqueMoran/remoteDiscordShell) out for a similar solution working in Discord.
+
 
 ![alt tag](/readme_images/gif1.gif)
 
 
+## Features
+- Control your computer even if its within a private network.
+- Send and download any file to/from your computer.
+- All Linux distros supported.
+- Login system and root restriction to avoid malicious connections from other users.
+- Log system to register every sent command.
+- Group support.
+- Update/upgrade your system remotely.
+- Install/remove any package remotely.
+- Ban any command you don't want to be sent to the computer.
+
+
+![alt tag](/readme_images/gif2.gif)
+
+
 ## How it works
-To access to computer control, Telegram users must log into the system. IDs of users who write the password correctly will be stored in a protected text file that allows future access. 
+To access to the computer control, Telegram users must log into the system, the password will be asked through DM to any unregistered user who sends a command.
 
-Once the user is logged in, commands can be sent. Linux computer receives and executes them from telegram bot, commands output will be shown to user on Telegram in real time.
+Once the user is logged in, all (allowed) commands sent will be processed by the computer and the generated output will be sent back to the user in real time.
 
-Telegram bot is running on computer's side. Commands are sent from any (authorized) Telegram client and received by Telegram bot. 
-Commands are sent through python to CMD and excecuted, the output is captured and sent in real time to the user.
+There is a configurable list of forbidden commands that shouldn't be used due to unexpected behaviour (e.g. non generating output commands such nano or vim).
 
-![alt tag](/readme_images/image1.png)
-
-
-
-## Working commands
-Most of Linux commands can be executed. Those that dont generate any kind of output will be received and executed  by the computer; commands that requires user input wont work yet, commands like nano, htop, vim... arent working neither.
-If errors occur during the execution of any command, it will be reported to the user.
-
-
-
-## Supported distros
-Debian and Ubuntu based distros can be updated and upgraded, install and uninstall packages aswell. 
-I am currently working on adding support for the rest of package managers.
-
+There is a set of special commands for specific actions such update or upgrade the system, the list of avaliable special commands is the following:
+- **/update:** Update system.
+- **/upgrade:** Upgrade system.
+- **/install:** Ask for a package and install it.
+- **/uninstall:** Ask for a package, then remove and purge it.
+- **/help:** Show help message.
+- **/reload:** Load config again.
+- **/stop:** Send CTRL+C signal to current running process.
+- **/forbidden:** Show forbidden command list.
+- **/getfile:** Download the specified file (absolute path).
 
 
 ## Installation guide
@@ -36,47 +48,47 @@ First step is downloading this project, use this command:
 git clone https://github.com/EnriqueMoran/remoteTelegramShell.git
 ```
 
-After cloning the repository in your own computer (it must be Linux OS), the following step is installing TelegramBotApi library (using command line):
+After cloning the repository in your own computer (it should be Linux OS), the following step is installing pyTelegramBotApi library (notice that this bot is compatible with python 3.7+, so pip3 might be necessary to use):
 ```
 pip install pyTelegramBotApi
 ```
-On telegram, create a new bot (talk to *@BotFather*) and save the token.
+
+1. On telegram, create a new bot (talk to *@BotFather*) and save the token. 
+
+![alt tag](/readme_images/image1.png)
+
+2. For using the bot in groups, you must disable privacy (/setprivacy).
 
 ![alt tag](/readme_images/image2.png)
 
-Afterwards edit "config.txt" file and fill the blanks. The files paths MUST be absolute, if you use relative paths you have to stay
-in the same directory during the execution (you can't use "cd" to move to others directories) and wont be able to run the script on boot (using crontab). 
+3. Edit *config.txt* file and fill the blanks (file paths MUST be absolute). 
 
 ![alt tag](/readme_images/image3.png)
 
-Depending on the chosen directory and if sudo parameter is active, it might be necessary to change access permissions of the files, this can be done with chmod command.
+Depending on the chosen directory and if sudo parameter is active, it might be necessary to change access permissions of files, this can be done with chmod command.
 
-Last step is executing .py script and start using our computer through Telegram.
+4. Last step is executing .py script and start using our computer through Telegram.
 ```
-python3 telegramShellBot.py
-python3 telegramShellBot.py &              (this will run the script in background)
+python3 pyTelegramShellBot.py
+python3 pyTelegramShellBot.py &              (this will run the script in background)
 ```
-
-![alt tag](/readme_images/image4.png)
 
 
 ## Sending and receiving files
-To send files just drag and drop on the chat, or click on send file button (images must be sent this way).
-To download files from the computer use "getfile + path" (e.g. getfile /home/user/Desktop/test-file.txt).
-**Important:** File sending can be done by any user, even if he hasn't logged in, this is currently being fixed.
+To send files just drag and drop on the chat, or click on send file button, they will be stored in configured shared folder.
 
-![alt tag](/readme_images/gif2.gif)
+![alt tag](/readme_images/gif3.gif)
 
 
-## Roadmap
-Future changes and features:
-* Improve compatibility with Linux distros (currently, install/uninstall commands uses apt-get).
-* Test and improve root option.
-* Improve security.
-* Fix no user checking file sending (critical).
-* Improve Windows compatibility.
-* Add parameter to allow file sending.
-* Add ctrl+c command.
+To download files from the computer use "/getfile + path" (e.g. /getfile /home/user/Desktop/test-file.txt).
+
+![alt tag](/readme_images/gif4.gif)
+
+
+## TODO
+- Clean code and use decorators for user checking.
+- Parallelize loading messages (update, upgrade, install, remove) to avoid max edition limit.
+- Add configurable ignore key to avoid processing messages starting with that character.
 
 
 ## Version history
@@ -94,5 +106,4 @@ Check [project releases](https://github.com/EnriqueMoran/remoteTelegramShell/rel
 - **v1.3.1:** (6/12/20) File sending and receiving feature added.
 - **v1.3.2:** (6/27/20) Log limit fixed, several non generating output messages fixed, shareFolder parameter edited in config file.
 - **v1.3.3:** (6/27/20) PEP8 formatted code, top command changed to send a txt file instead of printing the whole message.
-
-
+- **v1.4.0:** (12/27/21) Major changes. Code refactorized, group support added, multiple distro support added, improved security.

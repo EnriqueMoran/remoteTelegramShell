@@ -1,49 +1,88 @@
-#############################  remoteTelegramShell config file  #############################
+;#######################  remoteTelegram config file  #########################
 
 
-# This is the main configuration file. Before running remoteTelegramShell.py you must edit
-# this file and fill the following parameters in order to correctly configure the program.
+; This is the main configuration file. Before running pyTelegramShellBot.py
+; you must edit this file and fill the following parameters in order to
+; correctly configure the program.
 
 
-# Version - This parameter is automatically filled. Current version will be shown on /help
-# option. Please do not modify.
-version = v1.3.2
+
+[GENERAL]
+
+; token - This is bot auth token, necessary to connect bot to Telegram sevice.
+token=
 
 
-# TOKEN - This is bot auth token, necessary to connect bot to Telegram device.
-token = 
+; password - New users will need to use it in order to access to the service.
+; Logged users ID will be stored in users.txt. If there are users stored and
+; you want to change the password, you MUST delete users.txt file or its
+; content.
+password=
 
 
-# Password - New users will need to use it in order to access to the service. Logged users
-# ID will be stored in users.txt. If there are users stored and you want to change the
-# password, you MUST delete users.txt file or its content.
-password = 
+[FILES]
+
+; shared_folder - Absolute path to file sharing folder (ending with slash).
+; All sent files will be stored here, don't choose a root-protected directory.
+; Example: shared_folder=/home/user/Desktop/shared_folder/
+shared_folder=
 
 
-# File sharing folder - Absolute path to file sharing folder (ending in slash). All files 
-# sent through drag and drop will be stored there, dont choose a root-protected one.
-# It MUST be changed with absolute path, ending with slash.
-shareFolder = ./shareFolder/
+; users_file - Absolute path to users.txt. This file content is allowed users.
+; It will be checked on every command the bot recieves. Users ID will be
+; hashed and stored in order to preserve anonymity.
+; Example: users_file=/home/user/Desktop/shared_folder/users.txt
+users_file=
 
 
-# usersFile - Absolute path to users.txt. This file content is allowed users. Will be
-# checked on every command the bot recieves. Users ID will be hashed and stored in order to
-# preserve anonymity. Default value is the directory remoteTelegramShell.py is located at.
-# It MUST be changed with absolute path.
-usersFile = ./users.txt
+; log_file - Absolute path to log.txt. This file registers user's ID and input
+; besides the date and time.
+; Example: log_file=/home/user/Desktop/shared_folder/log.txt
+log_file=
 
 
-# logFile - Absolute path to log.txt. This file registers user's ID and input besides the
-# date and time. Default value is the directory remoteTelegramShell.py is located at.
-# It MUST be changed with absolute path.
-logFile = ./log.txt
+; log_limit - Number of stored lines on log.txt.
+log_limit=500
 
 
-# logLimit - Number of stored lines on log.txt. Default value is 500.
-logLimit = 500
+[PERMISSIONS]
+
+; enable_root - Allow root access. If you want to enable root access,
+; make sure you choose a strong password, since logged users will have total
+; control of the computer. Change it to "True" (without quotes) to enable it.
+enable_root=False
 
 
-# root - Allow root access, default value is "False" (disabled). If you want to enable
-# root access, make sure you choose a strong password, since logged users will have
-# total control of the computer. Change it to "True" (without quotes).
-root = False
+[USAGE]
+
+; forbidden_commands - List of unavaliable commands. Add here commands that
+; throw errors, unexpected behaviour, etc...
+forbidden_commands=["apt-get","aptitude","bash","clear","dc","ex","exit",
+                    "expand","htop","man","nano","poweroff","raspi-config",
+                    "reboot","scp","shutdown","ssh","vi","vim","wait",
+                    "watch", "wc"
+                    ]
+
+
+; update_command - Command used to update system (it depends on your Linux
+; distro).
+; Example: update_command=apt-get update
+update_command=apt-get update
+
+
+; upgrade_command - Command used to upgrade system (it depends on your Linux
+; distro).
+; Example: upgrade_command=apt-get upgrade
+upgrade_command=apt-get upgrade
+
+
+; install_command - Command used to install packages (it depends on your Linux
+; distro).
+; Example: install_command=apt-get install
+install_command=apt-get install
+
+
+; uninstall_command - Command used to remove packages (it depends on your
+; Linux distro).
+; Example: uninstall_command=apt-get --purge remove
+uninstall_command=apt-get --purge remove
